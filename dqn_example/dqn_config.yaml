@@ -38,7 +38,7 @@ model: {
 
 env_config:
   carla:
-    host: "localhost"
+    host: "carla_server"
     timeout: 30.0
     timestep: 0.05
     retries_on_error: 25
@@ -48,10 +48,12 @@ env_config:
     enable_map_assets: True
     enable_rendering: True
     show_display: True
+    start_server: False
+    server_port: 2000
 
   experiment:
     hero:
-      blueprint: "vehicle.lincoln.mkz_2017"
+      blueprint: "vehicle.lincoln.mkz2017"
       sensors:
         birdview:
           type: "sensor.birdview"
@@ -98,7 +100,7 @@ env_config:
       n_vehicles: 0
       n_walkers: 0
       tm_hybrid_mode: True
-    town: "Town05_Opt"
+    town: "Town05"
     others:
       framestack: 4
       max_time_idle: 600

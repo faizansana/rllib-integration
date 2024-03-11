@@ -30,7 +30,9 @@ BASE_CORE_CONFIG = {
     "quality_level": "Low",  # Quality level of the simulation. Can be 'Low', 'High', 'Epic'
     "enable_map_assets": False,  # enable / disable all town assets except for the road
     "enable_rendering": True,  # enable / disable camera images
-    "show_display": False  # Whether or not the server will be displayed
+    "show_display": False,  # Whether or not the server will be displayed
+    "start_server": False,  # Whether or not to start a CARLA server
+    "server_port": 2000  # Port of the CARLA server
 }
 
 
@@ -59,7 +61,10 @@ class CarlaCore:
         self.config = join_dicts(BASE_CORE_CONFIG, config)
         self.sensor_interface = SensorInterface()
 
-        self.init_server()
+        if self.config["start_server"]:
+            self.init_server()
+        else:
+            self.server_port = self.config["server_port"]
         self.connect_client()
 
     def init_server(self):
@@ -132,13 +137,10 @@ class CarlaCore:
 
         raise Exception("Cannot connect to server. Try increasing 'timeout' or 'retries_on_error' at the carla configuration")
 
-    def setup_experiment(self, experiment_config):
+    def setup_experiment(self, experiment_config: dict):
         """Initialize the hero and sensors"""
 
-        self.world = self.client.load_world(
-            map_name = experiment_config["town"],
-            reset_settings = False,
-            map_layers = carla.MapLayer.All if self.config["enable_map_assets"] else carla.MapLayer.NONE)
+        self.world = self.client.load_world(map_name=experiment_config["town"])
 
         self.map = self.world.get_map()
 
@@ -149,7 +151,7 @@ class CarlaCore:
         self.tm_port = self.server_port // 10 + self.server_port % 10
         while is_used(self.tm_port):
             print("Traffic manager's port " + str(self.tm_port) + " is already being used. Checking the next one")
-            tm_port += 1
+            self.tm_port += 1
         print("Traffic manager connected to port " + str(self.tm_port))
 
         self.traffic_manager = self.client.get_trafficmanager(self.tm_port)
