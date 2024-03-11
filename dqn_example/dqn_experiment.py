@@ -8,7 +8,7 @@
 
 import math
 import numpy as np
-from gym.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete
 
 import carla
 
